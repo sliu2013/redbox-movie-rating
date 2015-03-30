@@ -616,41 +616,48 @@ function extractTrailerId(type, res) {
 /*
 Search for the title, first in the CACHE and then through the API
 */
-function getRating(title, year, elementId) {
-//    var cached = checkCache(title);
-//    if (cached.inCache) {
-//        if (callback) {
-//            callback(cached.cachedVal, addArgs);
-//        }
-//        return;
-//    }
+function getRating(title, year, elementId, isKioskImg) {
+
     addCache(title);
     var omdbRes = {
         'Response': 'False',
     };
+
     var metaRes = {
         'result': false,
     };
-//    $.get(getIMDBAPI(title, year), function(res) {
-//        omdbRes = JSON.parse(res);});
-////        omdbRes = parseAPIResponse(res, {
-////            'Response': 'False',
-////        });
-////    });
-//
-////    return 3.0;
-//    console.log(omdbRes.Response);  //keys(omdbRes))
-//    return omdbRes.imdbRating;
 
     $.ajax({
         type: 'GET',
         url: getIMDBAPI(title, year),
         dataType:'json',
         success: function (data) {
+            if(data.imdbRating === null | data.Response === 'False'){
+                $('#'+elementId).append("<div class='rating-icon imdb-icon-good transparent'>" + "N/A</div>");
+            }else{
+                if(data.imdbRating >= 7){
+                    $('#'+elementId).append("<div class='rating-icon imdb-icon-good'>" + data.imdbRating + "</div>");
+                }else{
+                    $('#'+elementId).append("<div class='rating-icon imdb-icon-bad'>" + data.imdbRating + "</div>");
+                }
+            }
+            if(isKioskImg) {
+                $(":first-child", $('#'+elementId)).addClass('kiosk');
+            }
 
-            $('#'+elementId).append("<span class='imdb-icon star-box-giga-star'>" + ((data.imdbRating === null | data.Response === 'False') ? "N/A" : data.imdbRating) + "</span>");
-            $('#'+elementId).append("<span class='rt-icon audience-icon med fresh'>" + ((data.tomatoUserMeter === null | data.Response === 'False') ? "N/A" : data.tomatoUserMeter) + "</span>");
-        }
+            if(data.tomatoUserMeter === null | data.Response === 'False' | data.tomatoUserMeter === 'N/A'){
+                $('#'+elementId).append("<div class='rating-icon rt-icon-fresh transparent'>" + "N/A</div>");
+            }else{
+                if(data.tomatoUserMeter >= 60){
+                    $('#'+elementId).append("<div class='rating-icon rt-icon-fresh'>" + data.tomatoUserMeter + "</div>");
+                }else{
+                    $('#'+elementId).append("<div class='rating-icon rt-icon-rotten'>" + data.tomatoUserMeter + "</div>");
+                }
+            }
+            if(isKioskImg) {
+                $(":first-child", $('#'+elementId)).next().addClass('kiosk');
+            }
+       }
     });
 }
 
@@ -660,7 +667,7 @@ $.fn.hasAttr = function(name) {
 };
 
 ///////// INIT /////////////
-$(document).ready(function() {
+$(window).load(function() {
 
     $('img[class*="box-art box-hover"]').each(function(index){
         if($(this).hasAttr('alt')){
@@ -671,9 +678,9 @@ $(document).ready(function() {
                    movieYear = this.alt.split(",")[0].split("(")[1].split(")")[0];
                 }
             }
-            var $span = $("<span>", {class: "close", id: "rr" + index});
-            getRating(movieTitle, movieYear, "rr"+index);
-            $(this).before($span);
+            var $div = $("<div>", {id: "rr" + index});
+            getRating(movieTitle, movieYear, "rr"+index, $(this).parents('.hero-box').length);
+            $(this).before($div);
         }
     });
 });
