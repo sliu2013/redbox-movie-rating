@@ -1,9 +1,10 @@
 {
   "manifest_version": 2,
   
-  "name": "Bad Movie No More: Redbox Movie Rating",
+  "name": "Bad-Movie-No-More (Redbox movie ratings)",
   "author": "Sky Liu",
   "description": "Attach imdb and rotten tomatoes ratings to the movies listed in Redbox",
+  "short_name": "Redbox Movie Ratings",
   "icons": {
     "128": "images/redbox.png"
   },

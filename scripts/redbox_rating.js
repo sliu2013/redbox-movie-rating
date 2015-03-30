@@ -67,7 +67,7 @@ function getIMDBAPI(title, year) {
 /*
 Search for the title, first in the CACHE and then through the API
 */
-function getRating(title, year, elementId, isKioskImg) {
+function getRating(title, year, elementId, isHeroImg, isNewReleasesImg) {
 
     addCache(title);
     var omdbRes = {
@@ -92,21 +92,27 @@ function getRating(title, year, elementId, isKioskImg) {
                     $('#'+elementId).append("<div class='rating-icon imdb-icon-bad'>" + data.imdbRating + "</div>");
                 }
             }
-            if(isKioskImg) {
+            if(isHeroImg) {
                 $(":first-child", $('#'+elementId)).addClass('kiosk');
+            }
+            if(isNewReleasesImg) {
+                $(":first-child", $('#'+elementId)).addClass('midsize');
             }
 
             if(data.tomatoUserMeter === null | data.Response === 'False' | data.tomatoUserMeter === 'N/A'){
                 $('#'+elementId).append("<div class='rating-icon rt-icon-fresh transparent'>" + "N/A</div>");
             }else{
-                if(data.tomatoUserMeter >= 60){
+                if(data.tomatoUserMeter >= 70){
                     $('#'+elementId).append("<div class='rating-icon rt-icon-fresh'>" + data.tomatoUserMeter + "</div>");
                 }else{
                     $('#'+elementId).append("<div class='rating-icon rt-icon-rotten'>" + data.tomatoUserMeter + "</div>");
                 }
             }
-            if(isKioskImg) {
+            if(isHeroImg) {
                 $(":first-child", $('#'+elementId)).next().addClass('kiosk');
+            }
+            if(isNewReleasesImg) {
+                $(":first-child", $('#'+elementId)).next().addClass('midsize');
             }
        }
     });
@@ -130,8 +136,10 @@ $(window).load(function() {
                 }
             }
             var $div = $("<div>", {id: "rr" + index});
-            getRating(movieTitle, movieYear, "rr"+index, $(this).parents('.hero-box').length);
+            getRating(movieTitle, movieYear, "rr"+index, $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
             $(this).before($div);
         }
     });
 });
+
+style="width: 228px;"

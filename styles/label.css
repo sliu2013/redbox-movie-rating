@@ -11,13 +11,17 @@
     top: 2px;
     font-weight: bold;
     color: black;
-    line-height: 48px;
+    line-height: 49px;
     font-size: 13px;
     font-family: tahoma;
 }
 .rating-icon.kiosk{
     line-height: 100px;
     font-size: 20px;
+}
+.rating-icon.midsize{
+    line-height: 60px;
+    font-size: 15px;
 }
 .imdb-icon-good {
     background-image: url('chrome-extension://__MSG_@@extension_id__/images/imdb-good.png');
