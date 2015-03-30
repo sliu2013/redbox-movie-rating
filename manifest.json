@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+  
+  "name": "Bad Movie No More: Redbox Movie Rating",
+  "author": "Sky Liu",
+  "description": "Attach imdb and rotten tomatoes ratings to the movies listed in Redbox",
+  "icons": {
+    "128": "images/redbox.png"
+  },
+  "version": "0.0.1",
+  
+  "content_scripts": [
+	{
+	  "all_frames": true,
+	  "matches": [
+		"*://www.redbox.com/*"
+	  ],
+	  "js": ["scripts/jquery-1.11.2.min.js", "scripts/redbox_rating.js"],
+	  "css": ["styles/label.css"]
+	}
+  ],
+  "permissions": [
+    "https://www.redbox.com/*",
+    "storage"
+  ],
+  "web_accessible_resources": [
+    "images/*"
+  ]
+}
