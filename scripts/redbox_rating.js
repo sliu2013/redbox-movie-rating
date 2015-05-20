@@ -23,32 +23,57 @@ function parseAPIResponse(res, default_res) {
 /*
 Add rating to the cache
 */
-function addCache(title, imdb, tomatoMeter, tomatoUserMeter, imdbID, metacriticScore, metacriticUrl, year, type) {
+function addRatingToCache(title, imdb, tomatoMeter, tomatoUserMeter, imdbID, year, type) {
     imdb = imdb || null;
     tomatoMeter = tomatoMeter || null;
     tomatoUserMeter = tomatoUserMeter || null;
     imdbID = imdbID || null;
-    metacriticScore = metacriticScore || null;
-    metacriticUrl = metacriticUrl || null;
     year = year || null;
     type = type || null;
 
-    var date = new Date().getTime();
     var rating = {
         'title': title,
         'imdb': imdb,
         'tomatoMeter': tomatoMeter,
         'tomatoUserMeter': tomatoUserMeter,
         'imdbID': imdbID,
-        'metacriticScore': metacriticScore,
-        'metacriticUrl': metacriticUrl,
         'year': year,
         'date': date,
-        'type': type,
+        'type': type
     };
 
+    rating.date = new Date().getTime();
     CACHE[title] = JSON.stringify(rating);
     return rating;
+}
+
+
+function checkCache(title) {
+  if (!(title in CACHE)) {
+    return {
+      "inCache": false,
+      "cachedVal": null
+    };
+  }
+
+  var cachedVal = JSON.parse(CACHE[title]);
+  var inCache = false;
+  if (cachedVal !== undefined) {
+    inCache = isValidCacheEntry(cachedVal.date);
+  }
+  return {
+    "inCache": inCache,
+    "cachedVal": cachedVal
+  };
+}
+
+/*
+ * returns whether a date exceeds the CACHE_LIFE
+ */
+function isValidCacheEntry(date) {
+  var now = new Date().getTime();
+  var lifetime = now - date;
+  return lifetime <= CACHE_LIFE;
 }
 
 ///////////////// URL BUILDERS ////////////////
@@ -68,15 +93,12 @@ function getIMDBAPI(title, year) {
 Search for the title, first in the CACHE and then through the API
 */
 function getRating(title, year, elementId, isHeroImg, isNewReleasesImg) {
+    var cached = checkCache(title);
+    if (cached.inCache) {
+      return;
+    }
 
-    addCache(title);
-    var omdbRes = {
-        'Response': 'False',
-    };
-
-    var metaRes = {
-        'result': false,
-    };
+    addRatingToCache(title);
 
     $.ajax({
         type: 'GET',
@@ -126,7 +148,7 @@ $.fn.hasAttr = function(name) {
 ///////// INIT /////////////
 $(window).load(function() {
 
-    $('img[class*="box-art box-hover"]').each(function(index){
+    $('img.box-art.box-hover').each(function(index){
         if($(this).hasAttr('alt')){
             var movieTitle = this.alt.split(",")[0].indexOf("(") > -1 ? this.alt.split(",")[0].split("(")[0] : this.alt.split(",")[0];
             var movieYear = null;
@@ -142,4 +164,3 @@ $(window).load(function() {
     });
 });
 
-style="width: 228px;"
