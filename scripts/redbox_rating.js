@@ -110,12 +110,12 @@ function getRating(title, year, elementId, isHeroImg, isNewReleasesImg) {
 
 function addRatingToRedboxWebpage(data, ifAddToCache, elementId, isHeroImg, isNewReleasesImg){
   if(data.imdbRating === null || data.Response === 'False'){
-    $('#'+elementId).append("<div class='rating-icon imdb-icon-good transparent'>" + "N/A</div>");
+    $('#'+elementId).append("<div class='rating-icon imdb-icon-good transparent'><div class='rating-value'>" + "N/A</div></div>");
   }else{
     if(data.imdbRating >= 7){
-      $('#'+elementId).append("<div class='rating-icon imdb-icon-good'>" + data.imdbRating + "</div>");
+      $('#'+elementId).append("<div class='rating-icon imdb-icon-good'><div class='rating-value'>" + data.imdbRating + "</div></div>");
     }else{
-      $('#'+elementId).append("<div class='rating-icon imdb-icon-bad'>" + data.imdbRating + "</div>");
+      $('#'+elementId).append("<div class='rating-icon imdb-icon-bad'><div class='rating-value'>" + data.imdbRating + "</div></div>");
     }
   }
   if(isHeroImg) {
@@ -126,12 +126,12 @@ function addRatingToRedboxWebpage(data, ifAddToCache, elementId, isHeroImg, isNe
   }
 
   if(data.tomatoUserMeter === null || data.Response === 'False' || data.tomatoUserMeter === 'N/A'){
-    $('#'+elementId).append("<div class='rating-icon rt-icon-fresh transparent'>" + "N/A</div>");
+    $('#'+elementId).append("<div class='rating-icon rt-icon-fresh transparent'><div class='rating-value'>" + "N/A</div></div>");
   }else{
     if(data.tomatoUserMeter >= 70){
-      $('#'+elementId).append("<div class='rating-icon rt-icon-fresh'>" + data.tomatoUserMeter + "</div>");
+      $('#'+elementId).append("<div class='rating-icon rt-icon-fresh'><div class='rating-value'>" + data.tomatoUserMeter + "</div></div>");
     }else{
-      $('#'+elementId).append("<div class='rating-icon rt-icon-rotten'>" + data.tomatoUserMeter + "</div>");
+      $('#'+elementId).append("<div class='rating-icon rt-icon-rotten'><div class='rating-value'>" + data.tomatoUserMeter + "</div></div>");
     }
   }
   if(isHeroImg) {
@@ -153,21 +153,79 @@ $.fn.hasAttr = function(name) {
 
 ///////// INIT /////////////
 $(window).load(function() {
+    var url = location.href;
 
-    $('img.box-art.box-hover').each(function(index){
-        if($(this).hasAttr('alt')){
-            var movieTitle = this.alt.split(",")[0].indexOf("(") > -1 ? this.alt.split(",")[0].split("(")[0] : this.alt.split(",")[0];
-            var movieYear = null;
-            if (this.alt.split(",")[0].indexOf("(") > -1){
-                if(!isNaN(this.alt.split(",")[0].split("(")[1].split(")")[0])){
-                   movieYear = this.alt.split(",")[0].split("(")[1].split(")")[0];
+    if(url.indexOf('redbox.com') > -1) {
+        // For redbox home page
+        $('div.default-image-text.ng-binding').each(function(index){
+            if($(this).parent().attr('href').indexOf("http://www.redbox.com/movies") > -1) {
+                var movieTitle = this.textContent.indexOf("(") > -1 ? this.textContent.split("(")[0] : this.textContent;
+
+                var movieYear = null;
+                if (this.textContent.indexOf("(") > -1) {
+                    if (!isNaN(this.textContent.split("(")[1].split(")")[0])) {
+                        movieYear = this.textContent.split("(")[1].split(")")[0];
+                    }
+                }
+
+                var $div = $("<div>", {id: "rr" + index});
+                $(this).before($div);
+
+                getRating(movieTitle, movieYear, ("rr" + index), $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
+            }
+        });
+
+        // For redbox detail page
+        $('img.digital-details-background-image.xs-hidden').each(function(index){
+            if(this.outerHTML.indexOf('games-img-not-available') == -1) {
+                if ($(this).hasAttr('alt')) {
+                    var movieTitle = this.alt.split(",")[0].indexOf("(") > -1 ? this.alt.split(",")[0].split("(")[0] : this.alt.split(",")[0];
+
+                    var movieYear = null;
+                    if (this.alt.split(",")[0].indexOf("(") > -1) {
+                        if (!isNaN(this.alt.split(",")[0].split("(")[1].split(")")[0])) {
+                            movieYear = this.alt.split(",")[0].split("(")[1].split(")")[0];
+                        }
+                    }
+
+                    var $div = $("<div>", {id: "rr" + index});
+                    $(this).before($div);
+
+                    getRating(movieTitle, movieYear, ("rr" + index), $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
                 }
             }
-            var $div = $("<div>", {id: "rr" + index});
-            $(this).before($div);
+        });
+    }
 
-            getRating(movieTitle, movieYear, "rr"+index, $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
-        }
-    });
+    if(url.indexOf('vidangel.com') > -1) {
+        console.log("it's vidangel.com");
+        //// For vidangel home page
+        //$('div.overlay__title.ng-binding').each(function(index){
+        //        var movieTitle = this.textContent;
+        //        var movieYear = null;
+        //
+        //        var $div = $("<div>", {id: "rr" + index});
+        //        $(this).before($div);
+        //
+        //        console.log(movieTitle);
+        //
+        //        getRating(movieTitle, movieYear, ("rr" + index), $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
+        //});
+
+        //// For vidangel detail page
+        //$('div.title__title.ng-binding').each(function(index){
+        //    var movieTitle = this.textContent;
+        //    var movieYear = null;
+        //
+        //    var $div = $("<div>", {id: "rr" + index});
+        //    $(this).before($div);
+        //
+        //    console.log(movieTitle);
+        //
+        //    getRating(movieTitle, movieYear, ("rr" + index), $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
+        //});
+    }
+
+
 });
 

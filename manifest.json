@@ -1,20 +1,21 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 4,
   
-  "name": "Bad-Movie-No-More (Redbox movie ratings)",
+  "name": "Bad-Movie-No-More (Redbox/VidAngel movie ratings)",
   "author": "Sky Liu",
-  "description": "Attach imdb and rotten tomatoes ratings to the movies listed in Redbox",
-  "short_name": "Redbox Movie Ratings",
+  "description": "Attach imdb and rotten tomatoes ratings to the movies listed in Redbox and VidAngel",
+  "short_name": "Redbox/VidAngel Movie Ratings",
   "icons": {
     "128": "images/redbox.png"
   },
-  "version": "1.1",
+  "version": "1.2",
   
   "content_scripts": [
 	{
 	  "all_frames": true,
 	  "matches": [
-		"*://www.redbox.com/*"
+		"*://www.redbox.com/*",
+        "*://www.vidangel.com/*"
 	  ],
 	  "js": ["scripts/jquery-1.11.2.min.js", "scripts/redbox_rating.js"],
 	  "css": ["styles/label.css"]
@@ -22,6 +23,7 @@
   ],
   "permissions": [
     "https://www.redbox.com/*",
+    "https://www.vidangel.com/*",
     "storage"
   ],
   "web_accessible_resources": [
