@@ -1,4 +1,4 @@
-var IMDB_API = "http://www.omdbapi.com/?tomatoes=true";
+var IMDB_API = "https://www.omdbapi.com/?tomatoes=true";
 
 var CACHE = localStorage;
 var CACHE_LIFE = 1000 * 60 * 60 * 24 * 7 * 2; //two weeks in milliseconds
@@ -151,27 +151,31 @@ $.fn.hasAttr = function(name) {
     return $(this).attr(name) !== undefined;
 };
 
-///////// INIT /////////////
-$(window).load(function() {
+
+function getAllRatings() {
     var url = location.href;
 
+    // For redbox.com
     if(url.indexOf('redbox.com') > -1) {
         // For redbox home page
         $('div.default-image-text.ng-binding').each(function(index){
-            if($(this).parent().attr('href').indexOf("http://www.redbox.com/movies") > -1) {
-                var movieTitle = this.textContent.indexOf("(") > -1 ? this.textContent.split("(")[0] : this.textContent;
+            //console.log(this.textContent + "***" + $(this).prev('div[id^=rr]').length);
+            if($(this).prev('div[id^=rr]').length == 0) {
+                if ($(this).parent().attr('href').indexOf("http://www.redbox.com/movies") > -1) {
+                    var movieTitle = this.textContent.indexOf("(") > -1 ? this.textContent.split("(")[0] : this.textContent;
 
-                var movieYear = null;
-                if (this.textContent.indexOf("(") > -1) {
-                    if (!isNaN(this.textContent.split("(")[1].split(")")[0])) {
-                        movieYear = this.textContent.split("(")[1].split(")")[0];
+                    var movieYear = null;
+                    if (this.textContent.indexOf("(") > -1) {
+                        if (!isNaN(this.textContent.split("(")[1].split(")")[0])) {
+                            movieYear = this.textContent.split("(")[1].split(")")[0];
+                        }
                     }
+
+                    var $div = $("<div>", {id: "rr" + index});
+                    $(this).before($div);
+
+                    getRating(movieTitle, movieYear, ("rr" + index), $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
                 }
-
-                var $div = $("<div>", {id: "rr" + index});
-                $(this).before($div);
-
-                getRating(movieTitle, movieYear, ("rr" + index), $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
             }
         });
 
@@ -197,12 +201,19 @@ $(window).load(function() {
         });
     }
 
+    // For vidangel.com
     if(url.indexOf('vidangel.com') > -1) {
         console.log("it's vidangel.com");
         //// For vidangel home page
         //$('div.overlay__title.ng-binding').each(function(index){
-        //        var movieTitle = this.textContent;
+        //        var movieTitle = this.textContent.indexOf("(") > -1 ? this.textContent.split("(")[0] : this.textContent;
+        //
         //        var movieYear = null;
+        //        if (this.textContent.indexOf("(") > -1) {
+        //            if (!isNaN(this.textContent.split("(")[1].split(")")[0])) {
+        //                movieYear = this.textContent.split("(")[1].split(")")[0];
+        //            }
+        //        }
         //
         //        var $div = $("<div>", {id: "rr" + index});
         //        $(this).before($div);
@@ -225,7 +236,51 @@ $(window).load(function() {
         //    getRating(movieTitle, movieYear, ("rr" + index), $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
         //});
     }
+}
+
+// Receive request sent from the onClick action of chrome extension icon
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        console.log(sender.tab ?
+            "from a content script:" + sender.tab.url :
+            "from the extension");
+        if (request.requestMsg == "retrieve all ratings") {
+            getAllRatings();
+            sendResponse({replyMsg: "acknowledged and done"});
+        }
+    }
+);
 
 
-});
+///////// INIT /////////////
+$(window).load(function(){getAllRatings();});
+
+//$('img').load(function(){
+//    console.log("hello");
+//getAllRatings();});
+//
+//$(window).bind("load", function(){getAllRatings();});
+//
+//$('.title-box-odopod.popover.img-loaded').imagesLoaded( { background: true }, function() {
+//    console.log('image loading from backgroun=true: (2)');
+//});
+//
+//$('.title-box-odopod.popover.img-loaded').imagesLoaded().always(function() {
+//    console.log('image loading from always(): (3)');
+//});
+//
+//$('.title-box-odopod.popover.img-loaded').imagesLoaded( { background: true }, function() {
+//    console.log('image loading from backgroun=true: (4)');
+//});
+//
+//$('.title-box-odopod.popover.img-loaded').imagesLoaded().always(function() {
+//    console.log('image loading from always(): (5)');
+//});
+//
+//
+//$("img").one('load', function() {
+//    console.log("answer (6)");
+//}).each(function() {
+//    if(this.complete) $(this).load();
+//});
 
