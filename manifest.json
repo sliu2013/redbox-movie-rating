@@ -1,7 +1,7 @@
 {
-  "manifest_version": 4,
+  "manifest_version": 2,
   
-  "name": "Bad-Movie-No-More (Redbox/Vidangel movie ratings)",
+  "name": "Bad-Movie-No-More (Redbox/Vidangel ratings)",
   "author": "Sky Liu",
   "description": "Attach imdb and rotten tomatoes ratings to the movies listed in Redbox/VidAngel",
   "short_name": "Redbox/VidAngel Movie Ratings",
