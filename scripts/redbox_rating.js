@@ -203,7 +203,7 @@ function getAllRatings() {
 
     // For vidangel.com
     if(url.indexOf('vidangel.com') > -1) {
-        
+
         var global_index = 0;
 
         // For vidangel home page
@@ -248,6 +248,7 @@ function getAllRatings() {
     }
 }
 
+
 // Receive request sent from the onClick action of chrome extension icon
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -262,9 +263,9 @@ chrome.runtime.onMessage.addListener(
 );
 
 
-///////// INIT /////////////
+//////////// INIT /////////////
 $(window).load(function(){getAllRatings();});
-////////////////////////////
+//////////////////////////////
 
 
 

@@ -1,0 +1,5 @@
+ntelliJ ignores
+.idea/*
+*.iml
+*.iws
+*.ipr
