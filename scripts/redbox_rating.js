@@ -203,38 +203,48 @@ function getAllRatings() {
 
     // For vidangel.com
     if(url.indexOf('vidangel.com') > -1) {
-        console.log("it's vidangel.com");
-        //// For vidangel home page
-        //$('div.overlay__title.ng-binding').each(function(index){
-        //        var movieTitle = this.textContent.indexOf("(") > -1 ? this.textContent.split("(")[0] : this.textContent;
-        //
-        //        var movieYear = null;
-        //        if (this.textContent.indexOf("(") > -1) {
-        //            if (!isNaN(this.textContent.split("(")[1].split(")")[0])) {
-        //                movieYear = this.textContent.split("(")[1].split(")")[0];
-        //            }
-        //        }
-        //
-        //        var $div = $("<div>", {id: "rr" + index});
-        //        $(this).before($div);
-        //
-        //        console.log(movieTitle);
-        //
-        //        getRating(movieTitle, movieYear, ("rr" + index), $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
-        //});
+        
+        var global_index = 0;
 
-        //// For vidangel detail page
-        //$('div.title__title.ng-binding').each(function(index){
-        //    var movieTitle = this.textContent;
-        //    var movieYear = null;
-        //
-        //    var $div = $("<div>", {id: "rr" + index});
-        //    $(this).before($div);
-        //
-        //    console.log(movieTitle);
-        //
-        //    getRating(movieTitle, movieYear, ("rr" + index), $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
-        //});
+        // For vidangel home page
+        $('a.poster__label.ng-binding').each(function(index){
+            if($(this).prev('div[id^=rr]').length == 0) {
+                var movieTitle = this.textContent.indexOf("(") > -1 ? this.textContent.split("(")[0] : this.textContent;
+
+                var movieYear = null;
+                if (this.textContent.indexOf("(") > -1) {
+                    if (!isNaN(this.textContent.split("(")[1].split(")")[0])) {
+                        movieYear = this.textContent.split("(")[1].split(")")[0];
+                    }
+                }
+
+                var $div = $("<div>", {id: "rr" + index});
+                $(this).prev().append($div);
+
+                getRating(movieTitle, movieYear, ("rr" + index), $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
+
+                global_index = index;
+            }
+        });
+
+        // For vidangel detail page
+        $('div.title__title.ng-binding').each(function(index){
+            if($(this).prev('div[id^=rr]').length == 0) {
+                var movieTitle = this.textContent;
+
+                var movieYear = null;
+                if (this.textContent.indexOf("(") > -1) {
+                    if (!isNaN(this.textContent.split("(")[1].split(")")[0])) {
+                        movieYear = this.textContent.split("(")[1].split(")")[0];
+                    }
+                }
+
+                var $div = $("<div>", {id: "rr" + (index+global_index)});
+                $(this).parent().parent().parent().parent().prev().append($div);
+
+                getRating(movieTitle, movieYear, ("rr" + (index+global_index)), $(this).parents('.hero-box').length, $(this).parents("[style='width: 228px;']").length);
+            }
+        });
     }
 }
 
@@ -254,7 +264,12 @@ chrome.runtime.onMessage.addListener(
 
 ///////// INIT /////////////
 $(window).load(function(){getAllRatings();});
+////////////////////////////
 
+
+
+
+///// ***** Try to tackle infinite-scrolling issue, but no luck with the following approach ***** /////
 //$('img').load(function(){
 //    console.log("hello");
 //getAllRatings();});

@@ -11,7 +11,7 @@ chrome.pageAction.onClicked.addListener(function(tab) {
 // Called when the url of a tab changes.
 function checkForValidUrl(tabId, changeInfo, tab) {
 // If the tabs url contains 'redbox.com'...
-    if (tab.url.indexOf('redbox.com') > -1) {
+    if ((tab.url.indexOf('redbox.com') > -1) ||  (tab.url.indexOf('vidangel.com') > -1)){
 // ... show the page action.
         chrome.pageAction.show(tabId);
     }
